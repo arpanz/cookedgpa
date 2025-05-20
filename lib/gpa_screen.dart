@@ -92,33 +92,39 @@ class _GpaScreenState extends State<GpaScreen> {
       appBar: AppBar(
         title: Text(
           "Cooked GPA",
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
         ),
         centerTitle: true,
         backgroundColor: Colors.blue.shade600,
         elevation: 4,
       ),
-      body: Padding(
-        padding: EdgeInsets.all(16.0),
-        child:
-            gpaData == null
-                ? Center(child: CircularProgressIndicator())
-                : SingleChildScrollView(
+      body:
+          gpaData == null
+              ? Center(
+                child: SizedBox(
+                  width: 40,
+                  height: 40,
+                  child: CircularProgressIndicator(strokeWidth: 3),
+                ),
+              )
+              : Padding(
+                padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
+                child: SingleChildScrollView(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       // Centered Semester Selection Card
                       Center(
                         child: Card(
-                          elevation: 8,
+                          elevation: 4,
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20),
+                            borderRadius: BorderRadius.circular(14),
                           ),
                           color: Colors.indigo[50],
                           child: Padding(
                             padding: const EdgeInsets.symmetric(
-                              horizontal: 24.0,
-                              vertical: 20.0,
+                              horizontal: 12.0,
+                              vertical: 10.0,
                             ),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.center,
@@ -126,12 +132,12 @@ class _GpaScreenState extends State<GpaScreen> {
                                 Text(
                                   "Select Semester",
                                   style: TextStyle(
-                                    fontSize: 18,
+                                    fontSize: 15,
                                     fontWeight: FontWeight.w600,
                                     color: Colors.indigo[900],
                                   ),
                                 ),
-                                SizedBox(height: 10),
+                                SizedBox(height: 6),
                                 DropdownButton<String>(
                                   value: selectedSem,
                                   hint: Text("Semester"),
@@ -142,9 +148,9 @@ class _GpaScreenState extends State<GpaScreen> {
                                       selectedScheme = null;
                                     });
                                   },
-                                  borderRadius: BorderRadius.circular(16),
+                                  borderRadius: BorderRadius.circular(12),
                                   style: TextStyle(
-                                    fontSize: 16,
+                                    fontSize: 14,
                                     color: Colors.indigo[900],
                                   ),
                                   dropdownColor: Colors.white,
@@ -157,16 +163,16 @@ class _GpaScreenState extends State<GpaScreen> {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.center,
                                     children: [
-                                      SizedBox(height: 16),
+                                      SizedBox(height: 8),
                                       Text(
                                         "Select Scheme",
                                         style: TextStyle(
-                                          fontSize: 16,
+                                          fontSize: 13,
                                           fontWeight: FontWeight.w500,
                                           color: Colors.indigo[900],
                                         ),
                                       ),
-                                      SizedBox(height: 10),
+                                      SizedBox(height: 6),
                                       DropdownButton<String>(
                                         value: selectedScheme,
                                         hint: Text("Scheme"),
@@ -176,9 +182,9 @@ class _GpaScreenState extends State<GpaScreen> {
                                             selectedScheme = value;
                                           });
                                         },
-                                        borderRadius: BorderRadius.circular(16),
+                                        borderRadius: BorderRadius.circular(12),
                                         style: TextStyle(
-                                          fontSize: 16,
+                                          fontSize: 14,
                                           color: Colors.indigo[900],
                                         ),
                                         dropdownColor: Colors.white,
@@ -190,7 +196,7 @@ class _GpaScreenState extends State<GpaScreen> {
                           ),
                         ),
                       ),
-                      SizedBox(height: 24),
+                      SizedBox(height: 12),
                       ...courses.asMap().entries.map(
                         (entry) => CourseCard(
                           name: entry.value['title'],
@@ -204,7 +210,7 @@ class _GpaScreenState extends State<GpaScreen> {
                           },
                         ),
                       ),
-                      SizedBox(height: 32),
+                      SizedBox(height: 18),
                       if (courses.isNotEmpty)
                         Center(
                           child: Text(
@@ -212,20 +218,20 @@ class _GpaScreenState extends State<GpaScreen> {
                                 ? "Select all grades to calculate GPA"
                                 : "GPA: ${gpa.toStringAsFixed(2)}",
                             style: TextStyle(
-                              fontSize: 26,
+                              fontSize: 20,
                               fontWeight: FontWeight.bold,
                               color:
                                   gpa == null
                                       ? Colors.red[700]
                                       : Colors.green[800],
-                              letterSpacing: 1.2,
+                              letterSpacing: 1.1,
                             ),
                           ),
                         ),
                     ],
                   ),
                 ),
-      ),
+              ),
     );
   }
 }
@@ -249,14 +255,14 @@ class CourseCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 80,
+      height: 56,
       width: double.infinity,
       child: Card(
-        elevation: 6,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+        elevation: 2,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         color: Colors.white,
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 18.0, vertical: 10.0),
+          padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -265,33 +271,33 @@ class CourseCard extends StatelessWidget {
                 child: Text(
                   name,
                   style: TextStyle(
-                    fontSize: 18,
+                    fontSize: 14,
                     fontWeight: FontWeight.w500,
                     color: Colors.indigo[900],
                   ),
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
-              SizedBox(width: 10),
+              SizedBox(width: 6),
               Container(
-                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                padding: EdgeInsets.symmetric(horizontal: 7, vertical: 2),
                 decoration: BoxDecoration(
                   color: Colors.indigo[50],
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(7),
                 ),
                 child: Text(
                   credits.toString(),
                   style: TextStyle(
-                    fontSize: 15,
+                    fontSize: 12,
                     color: Colors.indigo[700],
                     fontWeight: FontWeight.bold,
                   ),
                 ),
               ),
-              SizedBox(width: 20),
+              SizedBox(width: 10),
               DropdownButton<String>(
                 value: selectedGrade.isEmpty ? null : selectedGrade,
-                hint: Text("Select Grade"),
+                hint: Text("Grade"),
                 items:
                     grades
                         .map(
@@ -305,8 +311,8 @@ class CourseCard extends StatelessWidget {
                         )
                         .toList(),
                 onChanged: onGradeChanged,
-                borderRadius: BorderRadius.circular(14),
-                style: TextStyle(fontSize: 16, color: Colors.indigo[900]),
+                borderRadius: BorderRadius.circular(10),
+                style: TextStyle(fontSize: 13, color: Colors.indigo[900]),
                 dropdownColor: Colors.indigo[50],
               ),
             ],

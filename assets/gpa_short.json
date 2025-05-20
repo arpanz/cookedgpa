@@ -81,7 +81,7 @@
   "Semester IV": {
     "Default": {
       "courses": [
-        {"title": "ED/IEC/OB", "credits": 2},
+        {"title": "ED/IEC/OB", "credits": 3},
         {"title": "DS (Discrete Maths)", "credits": 4},
         {"title": "OS", "credits": 3},
         {"title": "OOP-Java", "credits": 3},
