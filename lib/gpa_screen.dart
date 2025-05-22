@@ -71,10 +71,9 @@ class _GpaScreenState extends State<GpaScreen> {
   }
 
   void updateSelectedGrades(int courseCount) {
-    // Ensure selectedGrades has the same length as courses, default to blank or "O" based on toppr
+    // Only update if length mismatches, don't overwrite user's selections
     String defaultGrade = isToppr ? 'O' : '';
-    if (selectedGrades.length != courseCount ||
-        selectedGrades.any((g) => g != defaultGrade && g != 'O' && g != '')) {
+    if (selectedGrades.length != courseCount) {
       selectedGrades = List<String>.filled(courseCount, defaultGrade);
     }
   }
@@ -138,6 +137,9 @@ class _GpaScreenState extends State<GpaScreen> {
           actions: [
             // Toppr toggle button
             Row(
+              mainAxisSize:
+                  MainAxisSize
+                      .min, // <-- add this to prevent row from taking all space
               children: [
                 Text(
                   "toppr",
@@ -153,11 +155,13 @@ class _GpaScreenState extends State<GpaScreen> {
                   onChanged: (val) {
                     setState(() {
                       isToppr = val;
-                      // Instantly update all grades to blank or "O"
-                      selectedGrades = List<String>.filled(
-                        getCourses().length,
-                        isToppr ? 'O' : '',
-                      );
+                      // Only update grades if user hasn't selected any
+                      for (int i = 0; i < selectedGrades.length; i++) {
+                        if (selectedGrades[i].isEmpty ||
+                            selectedGrades[i] == 'O') {
+                          selectedGrades[i] = isToppr ? 'O' : '';
+                        }
+                      }
                     });
                   },
                   activeColor: Colors.tealAccent,
@@ -291,6 +295,25 @@ class _GpaScreenState extends State<GpaScreen> {
                           ),
                         ),
                         SizedBox(height: 12),
+                        // Move the message here for better visibility
+                        if (courses.isNotEmpty && gpa == null)
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 8.0),
+                            child: Center(
+                              child: Text(
+                                "Select all grades to calculate GPA",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
+                                  color:
+                                      isDark
+                                          ? Colors.red[300]
+                                          : Colors.red[700],
+                                  letterSpacing: 1.05,
+                                ),
+                              ),
+                            ),
+                          ),
                         ...courses
                             .asMap()
                             .entries
@@ -311,28 +334,21 @@ class _GpaScreenState extends State<GpaScreen> {
                             )
                             .toList(),
                         SizedBox(height: 18),
-                        if (courses.isNotEmpty) ...[
+                        if (courses.isNotEmpty && gpa != null)
                           Center(
                             child: Text(
-                              gpa == null
-                                  ? "Select all grades to calculate GPA"
-                                  : "GPA: ${gpa.toStringAsFixed(2)}",
+                              "GPA: ${gpa.toStringAsFixed(2)}",
                               style: TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
                                 color:
-                                    gpa == null
-                                        ? (isDark
-                                            ? Colors.red[300]
-                                            : Colors.red[700])
-                                        : (isDark
-                                            ? Colors.tealAccent
-                                            : Colors.green[800]),
+                                    isDark
+                                        ? Colors.tealAccent
+                                        : Colors.green[800],
                                 letterSpacing: 1.1,
                               ),
                             ),
                           ),
-                        ],
                       ],
                     ),
                   ),
