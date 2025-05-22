@@ -17,6 +17,7 @@ class _GpaScreenState extends State<GpaScreen> {
   List<String> grades = ['O', 'E', 'A', 'B', 'C', 'D', 'F'];
   List<String> selectedGrades = [];
   bool isDark = true; // dark mode is now default
+  bool isToppr = false; // toppr toggle state
 
   @override
   void initState() {
@@ -70,9 +71,11 @@ class _GpaScreenState extends State<GpaScreen> {
   }
 
   void updateSelectedGrades(int courseCount) {
-    // Ensure selectedGrades has the same length as courses, default to "O"
-    if (selectedGrades.length != courseCount) {
-      selectedGrades = List<String>.filled(courseCount, 'O');
+    // Ensure selectedGrades has the same length as courses, default to blank or "O" based on toppr
+    String defaultGrade = isToppr ? 'O' : '';
+    if (selectedGrades.length != courseCount ||
+        selectedGrades.any((g) => g != defaultGrade && g != 'O' && g != '')) {
+      selectedGrades = List<String>.filled(courseCount, defaultGrade);
     }
   }
 
@@ -133,15 +136,45 @@ class _GpaScreenState extends State<GpaScreen> {
           backgroundColor: isDark ? Colors.grey[950] : Colors.blue.shade600,
           elevation: 4,
           actions: [
-            IconButton(
-              icon: Icon(isDark ? Icons.light_mode : Icons.dark_mode),
-              tooltip: isDark ? "Switch to Light Mode" : "Switch to Dark Mode",
-              color: isDark ? Colors.tealAccent : null,
-              onPressed: () {
-                setState(() {
-                  isDark = !isDark;
-                });
-              },
+            // Toppr toggle button
+            Row(
+              children: [
+                Text(
+                  "toppr",
+                  style: TextStyle(
+                    color: isDark ? Colors.tealAccent : Colors.indigo[900],
+                    fontWeight: FontWeight.w500,
+                    fontSize: 14,
+                  ),
+                ),
+                SizedBox(width: 4),
+                Switch(
+                  value: isToppr,
+                  onChanged: (val) {
+                    setState(() {
+                      isToppr = val;
+                      // Instantly update all grades to blank or "O"
+                      selectedGrades = List<String>.filled(
+                        getCourses().length,
+                        isToppr ? 'O' : '',
+                      );
+                    });
+                  },
+                  activeColor: Colors.tealAccent,
+                  inactiveThumbColor: Colors.grey,
+                ),
+                IconButton(
+                  icon: Icon(isDark ? Icons.light_mode : Icons.dark_mode),
+                  tooltip:
+                      isDark ? "Switch to Light Mode" : "Switch to Dark Mode",
+                  color: isDark ? Colors.tealAccent : null,
+                  onPressed: () {
+                    setState(() {
+                      isDark = !isDark;
+                    });
+                  },
+                ),
+              ],
             ),
           ],
         ),
@@ -258,22 +291,27 @@ class _GpaScreenState extends State<GpaScreen> {
                           ),
                         ),
                         SizedBox(height: 12),
-                        ...courses.asMap().entries.map(
-                          (entry) => CourseCard(
-                            name: entry.value['title'],
-                            credits: entry.value['credits'],
-                            grades: grades,
-                            selectedGrade: selectedGrades[entry.key],
-                            onGradeChanged: (String? newGrade) {
-                              setState(() {
-                                selectedGrades[entry.key] = newGrade ?? 'O';
-                              });
-                            },
-                            isDark: isDark,
-                          ),
-                        ),
+                        ...courses
+                            .asMap()
+                            .entries
+                            .map(
+                              (entry) => CourseCard(
+                                name: entry.value['title'],
+                                credits: entry.value['credits'],
+                                grades: grades,
+                                selectedGrade: selectedGrades[entry.key],
+                                onGradeChanged: (String? newGrade) {
+                                  setState(() {
+                                    selectedGrades[entry.key] =
+                                        newGrade ?? (isToppr ? 'O' : '');
+                                  });
+                                },
+                                isDark: isDark,
+                              ),
+                            )
+                            .toList(),
                         SizedBox(height: 18),
-                        if (courses.isNotEmpty)
+                        if (courses.isNotEmpty) ...[
                           Center(
                             child: Text(
                               gpa == null
@@ -294,6 +332,7 @@ class _GpaScreenState extends State<GpaScreen> {
                               ),
                             ),
                           ),
+                        ],
                       ],
                     ),
                   ),
