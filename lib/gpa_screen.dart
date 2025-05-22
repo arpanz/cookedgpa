@@ -16,6 +16,7 @@ class _GpaScreenState extends State<GpaScreen> {
   String? selectedScheme;
   List<String> grades = ['O', 'E', 'A', 'B', 'C', 'D', 'F'];
   List<String> selectedGrades = [];
+  bool isDark = true; // dark mode is now default
 
   @override
   void initState() {
@@ -69,9 +70,9 @@ class _GpaScreenState extends State<GpaScreen> {
   }
 
   void updateSelectedGrades(int courseCount) {
-    // Ensure selectedGrades has the same length as courses, default to empty string
+    // Ensure selectedGrades has the same length as courses, default to "O"
     if (selectedGrades.length != courseCount) {
-      selectedGrades = List<String>.filled(courseCount, '');
+      selectedGrades = List<String>.filled(courseCount, 'O');
     }
   }
 
@@ -88,150 +89,216 @@ class _GpaScreenState extends State<GpaScreen> {
     updateSelectedGrades(courses.length);
     final gpa = getCalculatedGPA(courses);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          "Cooked GPA",
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
-        ),
-        centerTitle: true,
-        backgroundColor: Colors.blue.shade600,
-        elevation: 4,
-      ),
-      body:
-          gpaData == null
-              ? Center(
-                child: SizedBox(
-                  width: 40,
-                  height: 40,
-                  child: CircularProgressIndicator(strokeWidth: 3),
+    final cardColor = isDark ? Colors.grey[900] : Colors.indigo[50];
+    final cardTextColor = isDark ? Colors.white : Colors.indigo[900];
+    final dropdownColor = isDark ? Colors.grey[850] : Colors.white;
+    final dropdownItemColor = isDark ? Colors.white : Colors.indigo[900];
+    final indicatorColor =
+        isDark ? Colors.tealAccent : Theme.of(context).colorScheme.primary;
+
+    return Theme(
+      data:
+          isDark
+              ? ThemeData.dark(useMaterial3: true).copyWith(
+                colorScheme: ColorScheme.fromSeed(
+                  seedColor: Colors.teal,
+                  brightness: Brightness.dark,
                 ),
-              )
-              : Padding(
-                padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
-                child: SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      // Centered Semester Selection Card
-                      Center(
-                        child: Card(
-                          elevation: 4,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14),
-                          ),
-                          color: Colors.indigo[50],
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 12.0,
-                              vertical: 10.0,
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Text(
-                                  "Select Semester",
-                                  style: TextStyle(
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.w600,
-                                    color: Colors.indigo[900],
-                                  ),
-                                ),
-                                SizedBox(height: 6),
-                                DropdownButton<String>(
-                                  value: selectedSem,
-                                  hint: Text("Semester"),
-                                  items: getSemesterDropdownItems(),
-                                  onChanged: (value) {
-                                    setState(() {
-                                      selectedSem = value;
-                                      selectedScheme = null;
-                                    });
-                                  },
-                                  borderRadius: BorderRadius.circular(12),
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color: Colors.indigo[900],
-                                  ),
-                                  dropdownColor: Colors.white,
-                                ),
-                                if (selectedSem != null &&
-                                    gpaData![selectedSem!]
-                                        is Map<String, dynamic> &&
-                                    gpaData![selectedSem!].length > 1)
-                                  Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      SizedBox(height: 8),
-                                      Text(
-                                        "Select Scheme",
-                                        style: TextStyle(
-                                          fontSize: 13,
-                                          fontWeight: FontWeight.w500,
-                                          color: Colors.indigo[900],
-                                        ),
-                                      ),
-                                      SizedBox(height: 6),
-                                      DropdownButton<String>(
-                                        value: selectedScheme,
-                                        hint: Text("Scheme"),
-                                        items: getSchemeDropdownItems(),
-                                        onChanged: (value) {
-                                          setState(() {
-                                            selectedScheme = value;
-                                          });
-                                        },
-                                        borderRadius: BorderRadius.circular(12),
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          color: Colors.indigo[900],
-                                        ),
-                                        dropdownColor: Colors.white,
-                                      ),
-                                    ],
-                                  ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: 12),
-                      ...courses.asMap().entries.map(
-                        (entry) => CourseCard(
-                          name: entry.value['title'],
-                          credits: entry.value['credits'],
-                          grades: grades,
-                          selectedGrade: selectedGrades[entry.key],
-                          onGradeChanged: (String? newGrade) {
-                            setState(() {
-                              selectedGrades[entry.key] = newGrade ?? '';
-                            });
-                          },
-                        ),
-                      ),
-                      SizedBox(height: 18),
-                      if (courses.isNotEmpty)
-                        Center(
-                          child: Text(
-                            gpa == null
-                                ? "Select all grades to calculate GPA"
-                                : "GPA: ${gpa.toStringAsFixed(2)}",
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color:
-                                  gpa == null
-                                      ? Colors.red[700]
-                                      : Colors.green[800],
-                              letterSpacing: 1.1,
-                            ),
-                          ),
-                        ),
-                    ],
+                cardColor: Colors.grey[900],
+                scaffoldBackgroundColor: Colors.black,
+                appBarTheme: AppBarTheme(
+                  backgroundColor: Colors.grey[950],
+                  iconTheme: IconThemeData(color: Colors.tealAccent),
+                  titleTextStyle: TextStyle(
+                    color: Colors.tealAccent,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 22,
+                    fontFamily: "Playpen Sans",
                   ),
                 ),
-              ),
+                textTheme: ThemeData.dark().textTheme.apply(
+                  fontFamily: "Playpen Sans",
+                  bodyColor: Colors.white,
+                  displayColor: Colors.tealAccent,
+                ),
+              )
+              : ThemeData.light(useMaterial3: true),
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(
+            "Cooked GPA",
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
+          ),
+          centerTitle: true,
+          backgroundColor: isDark ? Colors.grey[950] : Colors.blue.shade600,
+          elevation: 4,
+          actions: [
+            IconButton(
+              icon: Icon(isDark ? Icons.light_mode : Icons.dark_mode),
+              tooltip: isDark ? "Switch to Light Mode" : "Switch to Dark Mode",
+              color: isDark ? Colors.tealAccent : null,
+              onPressed: () {
+                setState(() {
+                  isDark = !isDark;
+                });
+              },
+            ),
+          ],
+        ),
+        body:
+            gpaData == null
+                ? Center(
+                  child: CircularProgressIndicator(
+                    strokeWidth: 4,
+                    color: indicatorColor,
+                  ),
+                )
+                : Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 12.0,
+                    vertical: 12.0,
+                  ),
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        // Centered Semester Selection Card
+                        Center(
+                          child: Card(
+                            elevation: 8,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(22),
+                            ),
+                            color: cardColor,
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 32.0,
+                                vertical: 24.0,
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    "Select Semester",
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w600,
+                                      color: cardTextColor,
+                                    ),
+                                  ),
+                                  SizedBox(height: 6),
+                                  DropdownButton<String>(
+                                    value: selectedSem,
+                                    hint: Text(
+                                      "Semester",
+                                      style: TextStyle(
+                                        color: dropdownItemColor,
+                                      ),
+                                    ),
+                                    items: getSemesterDropdownItems(),
+                                    onChanged: (value) {
+                                      setState(() {
+                                        selectedSem = value;
+                                        selectedScheme = null;
+                                      });
+                                    },
+                                    borderRadius: BorderRadius.circular(12),
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      color: dropdownItemColor,
+                                    ),
+                                    dropdownColor: dropdownColor,
+                                  ),
+                                  if (selectedSem != null &&
+                                      gpaData![selectedSem!]
+                                          is Map<String, dynamic> &&
+                                      gpaData![selectedSem!].length > 1)
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        SizedBox(height: 8),
+                                        Text(
+                                          "Select Scheme",
+                                          style: TextStyle(
+                                            fontSize: 13,
+                                            fontWeight: FontWeight.w500,
+                                            color: cardTextColor,
+                                          ),
+                                        ),
+                                        SizedBox(height: 6),
+                                        DropdownButton<String>(
+                                          value: selectedScheme,
+                                          hint: Text(
+                                            "Scheme",
+                                            style: TextStyle(
+                                              color: dropdownItemColor,
+                                            ),
+                                          ),
+                                          items: getSchemeDropdownItems(),
+                                          onChanged: (value) {
+                                            setState(() {
+                                              selectedScheme = value;
+                                            });
+                                          },
+                                          borderRadius: BorderRadius.circular(
+                                            12,
+                                          ),
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            color: dropdownItemColor,
+                                          ),
+                                          dropdownColor: dropdownColor,
+                                        ),
+                                      ],
+                                    ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: 12),
+                        ...courses.asMap().entries.map(
+                          (entry) => CourseCard(
+                            name: entry.value['title'],
+                            credits: entry.value['credits'],
+                            grades: grades,
+                            selectedGrade: selectedGrades[entry.key],
+                            onGradeChanged: (String? newGrade) {
+                              setState(() {
+                                selectedGrades[entry.key] = newGrade ?? 'O';
+                              });
+                            },
+                            isDark: isDark,
+                          ),
+                        ),
+                        SizedBox(height: 18),
+                        if (courses.isNotEmpty)
+                          Center(
+                            child: Text(
+                              gpa == null
+                                  ? "Select all grades to calculate GPA"
+                                  : "GPA: ${gpa.toStringAsFixed(2)}",
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color:
+                                    gpa == null
+                                        ? (isDark
+                                            ? Colors.red[300]
+                                            : Colors.red[700])
+                                        : (isDark
+                                            ? Colors.tealAccent
+                                            : Colors.green[800]),
+                                letterSpacing: 1.1,
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                ),
+      ),
     );
   }
 }
@@ -242,6 +309,7 @@ class CourseCard extends StatelessWidget {
   final List<String> grades;
   final String selectedGrade;
   final ValueChanged<String?> onGradeChanged;
+  final bool isDark;
 
   const CourseCard({
     super.key,
@@ -250,17 +318,24 @@ class CourseCard extends StatelessWidget {
     required this.grades,
     required this.selectedGrade,
     required this.onGradeChanged,
+    this.isDark = false,
   });
 
   @override
   Widget build(BuildContext context) {
+    final cardColor = isDark ? Colors.grey[900] : Colors.white;
+    final textColor = isDark ? Colors.white : Colors.indigo[900];
+    final creditColor = isDark ? Colors.tealAccent : Colors.indigo[700];
+    final dropdownColor = isDark ? Colors.grey[850] : Colors.indigo[50];
+    final dropdownTextColor = isDark ? Colors.white : Colors.indigo[900];
+
     return SizedBox(
       height: 56,
       width: double.infinity,
       child: Card(
         elevation: 2,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        color: Colors.white,
+        color: cardColor,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
           child: Row(
@@ -273,7 +348,7 @@ class CourseCard extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
-                    color: Colors.indigo[900],
+                    color: textColor,
                   ),
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -282,14 +357,14 @@ class CourseCard extends StatelessWidget {
               Container(
                 padding: EdgeInsets.symmetric(horizontal: 7, vertical: 2),
                 decoration: BoxDecoration(
-                  color: Colors.indigo[50],
+                  color: isDark ? Colors.grey[800] : Colors.indigo[50],
                   borderRadius: BorderRadius.circular(7),
                 ),
                 child: Text(
                   credits.toString(),
                   style: TextStyle(
                     fontSize: 12,
-                    color: Colors.indigo[700],
+                    color: creditColor,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -297,7 +372,7 @@ class CourseCard extends StatelessWidget {
               SizedBox(width: 10),
               DropdownButton<String>(
                 value: selectedGrade.isEmpty ? null : selectedGrade,
-                hint: Text("Grade"),
+                hint: Text("Grade", style: TextStyle(color: dropdownTextColor)),
                 items:
                     grades
                         .map(
@@ -305,15 +380,18 @@ class CourseCard extends StatelessWidget {
                             value: grade,
                             child: Text(
                               grade,
-                              style: TextStyle(fontWeight: FontWeight.w500),
+                              style: TextStyle(
+                                fontWeight: FontWeight.w500,
+                                color: dropdownTextColor,
+                              ),
                             ),
                           ),
                         )
                         .toList(),
                 onChanged: onGradeChanged,
                 borderRadius: BorderRadius.circular(10),
-                style: TextStyle(fontSize: 13, color: Colors.indigo[900]),
-                dropdownColor: Colors.indigo[50],
+                style: TextStyle(fontSize: 13, color: dropdownTextColor),
+                dropdownColor: dropdownColor,
               ),
             ],
           ),
