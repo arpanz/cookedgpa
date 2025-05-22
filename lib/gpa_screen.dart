@@ -99,32 +99,40 @@ class _GpaScreenState extends State<GpaScreen> {
         isDark ? Colors.tealAccent : Theme.of(context).colorScheme.primary;
 
     return Theme(
-      data:
-          isDark
-              ? ThemeData.dark(useMaterial3: true).copyWith(
-                colorScheme: ColorScheme.fromSeed(
-                  seedColor: Colors.teal,
-                  brightness: Brightness.dark,
-                ),
-                cardColor: Colors.grey[900],
-                scaffoldBackgroundColor: Colors.black,
-                appBarTheme: AppBarTheme(
-                  backgroundColor: Colors.grey[950],
-                  iconTheme: IconThemeData(color: Colors.tealAccent),
-                  titleTextStyle: TextStyle(
-                    color: Colors.tealAccent,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 22,
-                    fontFamily: "Playpen Sans",
-                  ),
-                ),
-                textTheme: ThemeData.dark().textTheme.apply(
-                  fontFamily: "Playpen Sans",
-                  bodyColor: Colors.white,
-                  displayColor: Colors.tealAccent,
-                ),
-              )
-              : ThemeData.light(useMaterial3: true),
+      data: (isDark
+              ? ThemeData.dark(useMaterial3: true)
+              : ThemeData.light(useMaterial3: true))
+          .copyWith(
+            colorScheme:
+                isDark
+                    ? ColorScheme.fromSeed(
+                      seedColor: Colors.teal,
+                      brightness: Brightness.dark,
+                    )
+                    : ColorScheme.fromSeed(
+                      seedColor: Colors.blue.shade800,
+                      brightness: Brightness.light,
+                    ),
+            cardColor: isDark ? Colors.grey[900] : Colors.indigo[50],
+            scaffoldBackgroundColor: isDark ? Colors.black : null,
+            appBarTheme: AppBarTheme(
+              backgroundColor: isDark ? Colors.grey[950] : Colors.blue.shade600,
+              iconTheme: IconThemeData(
+                color: isDark ? Colors.tealAccent : Colors.black,
+              ),
+              titleTextStyle: TextStyle(
+                color: isDark ? Colors.tealAccent : Colors.black,
+                fontWeight: FontWeight.bold,
+                fontSize: 22,
+                fontFamily: "Playpen Sans",
+              ),
+            ),
+            textTheme: Theme.of(context).textTheme.apply(
+              fontFamily: "Playpen Sans",
+              bodyColor: isDark ? Colors.white : Colors.indigo[900],
+              displayColor: isDark ? Colors.tealAccent : Colors.indigo[900],
+            ),
+          ),
       child: Scaffold(
         appBar: AppBar(
           title: Text(
@@ -304,7 +312,7 @@ class _GpaScreenState extends State<GpaScreen> {
                                 "Select all grades to calculate GPA",
                                 style: TextStyle(
                                   fontSize: 16,
-                                  fontWeight: FontWeight.w500,
+                                  fontWeight: FontWeight.w600,
                                   color:
                                       isDark
                                           ? Colors.red[300]
