@@ -1,6 +1,6 @@
 # cookedgpa
 
-A new Flutter project.
+Cookedgpa.netlify.app
 
 ## Getting Started
 
